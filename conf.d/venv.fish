@@ -14,7 +14,7 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
   if git rev-parse --show-toplevel &>/dev/null
     set gitdir (realpath (git rev-parse --show-toplevel))
   else
-    set gitdir ""
+    set gitdir "."
   end
 
   # find a virtual environment in the git directory
