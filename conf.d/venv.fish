@@ -7,7 +7,7 @@
 #   for other means of cd, such as z.
 # * Update syntax to work with new versions of fish.
 
-function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
+function __auto_source_venv --on-variable PWD --on-event fish_prompt --description "Activate/Deactivate virtualenv on directory change"
   status --is-command-substitution; and return
 
   # Check if we are inside a git directory
