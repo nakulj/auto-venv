@@ -10,27 +10,25 @@
 function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
   status --is-command-substitution; and return
 
-  # Check if we are inside a git directory
+  # Check if we are inside a git repository
   if git rev-parse --show-toplevel &>/dev/null
-    set gitdir (realpath (git rev-parse --show-toplevel))
+    set dir (realpath (git rev-parse --show-toplevel))
   else
-    set gitdir (pwd)
+    set dir (pwd)
   end
 
-  # find a virtual environment in the git directory
-
+  # Find a virtual environment in the directory
   set VENV_DIR_NAMES env .env venv .venv
-  for venv_dir in $gitdir/$VENV_DIR_NAMES
+  for venv_dir in $dir/$VENV_DIR_NAMES
     if test -e "$venv_dir/bin/activate.fish"
       break
     end
   end
 
-
-  # If venv is not activated or a different venv is activated and venv exist.
+  # Activate venv if it was found and not activated before
   if test "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
     source $venv_dir/bin/activate.fish
-  # If venv activated but the current (git) dir has no venv.
+  # Deactivate venv if it is activated but the directory doesn't exist
   else if not test -z "$VIRTUAL_ENV" -o -e "$venv_dir"
     deactivate
   end
