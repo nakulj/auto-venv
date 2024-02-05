@@ -12,3 +12,7 @@ fisher install nakulj/auto-venv
 ### Manual install
 
 Copy `conf.d/venv.fish` into your `conf.d` directory (usually `~/.config/fish/conf.d`)
+
+## Working logic
+
+The function is called after each directory change. It searches for a directory called `env` `.env` `venv` or `.venv` in the current working directory, or root directory of the git repo if the current directory is in a git repo. If the virtual environment is not yet activated, the fish-specific activation command for this virtual environment is sourced.
