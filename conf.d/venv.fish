@@ -8,31 +8,36 @@
 # * Update syntax to work with new versions of fish.
 
 function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
+    # Prevent running during command substitution
     status --is-command-substitution; and return
 
     # Check if we are inside a git repository
-    if git rev-parse --show-toplevel &>/dev/null
-        set dir (realpath (git rev-parse --show-toplevel))
+    if command git rev-parse --show-toplevel &>/dev/null
+        set dir (realpath (command git rev-parse --show-toplevel))
     else
         set dir (pwd)
     end
 
     # Find a virtual environment in the directory
-    set VENV_DIR_NAMES env .env venv .venv
-    for venv_dir in $dir/$VENV_DIR_NAMES
-        if test -e "$venv_dir/bin/activate.fish"
+    set -l VENV_DIR_NAMES env .env venv .venv
+    set -l venv_dir ""
+    for name in $VENV_DIR_NAMES
+        if test -e "$dir/$name/bin/activate.fish"
+            set venv_dir "$dir/$name"
             break
         end
     end
 
     # Activate venv if it was found and not activated before
-    if test "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
-        source $venv_dir/bin/activate.fish
-        echo "venv: $(which python)"
-        # Deactivate venv if it is activated but the directory doesn't exist
-    else if not test -z "$VIRTUAL_ENV" -o -e "$venv_dir"
+    if test -n "$venv_dir" -a "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
+        command source "$venv_dir/bin/activate.fish"
+        echo "Activated virtualenv: $venv_dir ($(which python))"
+    # Deactivate venv if it is activated but we're no longer in a directory with a venv
+    else if test -n "$VIRTUAL_ENV" -a -z "$venv_dir"
         deactivate
+        echo "Deactivated virtualenv"
     end
 end
 
+# Initial run
 __auto_source_venv
