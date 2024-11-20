@@ -3,6 +3,8 @@
 # * Instead of overriding cd, we detect directory change. This allows the script to work
 #   for other means of cd, such as z.
 # * Update syntax to work with new versions of fish.
+# * Prevent shell from exiting when deactivating virtualenv.
+# * Only run auto_source_venv if we're not already handling venv.
 
 # Global flag to track if we're in the middle of handling venv
 set -g __VENV_HANDLING 0
