@@ -30,7 +30,7 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
 
     # Activate venv if it was found and not activated before
     if test -n "$venv_dir" -a "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
-        command source "$venv_dir/bin/activate.fish"
+        source "$venv_dir/bin/activate.fish"
         echo "Activated virtualenv: $venv_dir ($(which python))"
     # Deactivate venv if it is activated but we're no longer in a directory with a venv
     else if test -n "$VIRTUAL_ENV" -a -z "$venv_dir"
