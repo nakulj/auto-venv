@@ -15,7 +15,7 @@ Automatically activate virtual environments in fish. Based on gists by [bastibe]
 ### Using [`fisher`](https://github.com/jorgebucaran/fisher) (Recommended):
 Run
 ```sh
-fisher install nohzafk/auto-venv
+fisher install nakulj/auto-venv
 ```
 
 ### Manual install
