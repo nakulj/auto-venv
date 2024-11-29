@@ -1,3 +1,6 @@
+# Based on https://gist.github.com/tommyip/cf9099fa6053e30247e5d0318de2fb9e
+
+
 # Based on https://gist.github.com/bastibe/c0950e463ffdfdfada7adf149ae77c6f
 # Changes:
 # * Instead of overriding cd, we detect directory change. This allows the script to work
@@ -16,7 +19,7 @@ function __safe_activate_venv
 
     # Read the activate.fish content and extract key parts
     set -l activate_script (cat $argv[1])
-    
+
     # Set up the environment without sourcing activate.fish
     set -gx VIRTUAL_ENV (dirname (dirname $argv[1]))
     set -gx _OLD_VIRTUAL_PATH $PATH
@@ -27,7 +30,7 @@ function __safe_activate_venv
         set -gx _OLD_VIRTUAL_PYTHONHOME $PYTHONHOME
         set -e PYTHONHOME
     end
-    
+
     # Set prompt
     set -gx VIRTUAL_ENV_PROMPT (basename "$VIRTUAL_ENV")
 end
@@ -38,7 +41,7 @@ function __handle_virtualenv_inheritance --on-event fish_prompt
         # Mark this shell as initialized and prevent recursive handling
         set -g __VENV_INITIALIZED 1
         set -g __VENV_HANDLING 1
-        
+
         # Clear inherited environment
         set -l old_path $PATH
         set -e VIRTUAL_ENV
@@ -79,15 +82,16 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
         end
     end
 
-    # Activate venv if it was found and not activated before
+
     if test -n "$venv_dir" -a "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
+        # Activate venv if it was found and not activated before
         __safe_activate_venv "$venv_dir/bin/activate.fish"
         echo "Activated virtualenv: $venv_dir ($(which python))"
-    # Deactivate venv if it is activated but we're no longer in a directory with a venv
     else if test -n "$VIRTUAL_ENV" -a -z "$venv_dir"
+        # Deactivate venv if it is activated but we're no longer in a directory with a venv
         # Save PATH before deactivation
         set -l old_path $PATH
-        
+
         # Try to deactivate safely
         if functions -q deactivate
             functions -q deactivate; and deactivate
