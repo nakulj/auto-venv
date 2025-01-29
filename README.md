@@ -39,3 +39,10 @@ The plugin looks for virtual environments in the following directories:
 - `.venv/`
 
 If you're in a git repository, it will look for these directories at the repository root.
+
+
+## Configuration
+
+Configuration can be done by setting environment variables:
+
+* `AUTO_VENV_SILENT`: Auto-venv outputs the activated virtual environment by default, and indicates when the environment was deactivated. When `AUTO_VENV_SILENT` is set, this output is omitted.
