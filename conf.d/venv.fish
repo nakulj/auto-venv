@@ -86,7 +86,6 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
     if test -n "$venv_dir" -a "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
         # Activate venv if it was found and not activated before
         __safe_activate_venv "$venv_dir/bin/activate.fish"
-        echo "Activated virtualenv: $venv_dir ($(which python))"
     else if test -n "$VIRTUAL_ENV" -a -z "$venv_dir"
         # Deactivate venv if it is activated but we're no longer in a directory with a venv
         # Save PATH before deactivation
@@ -108,7 +107,6 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
             set -e VIRTUAL_ENV_PROMPT
             set -gx PATH $old_path
         end
-        echo "Deactivated virtualenv"
     end
 
     set -g __VENV_HANDLING 0
