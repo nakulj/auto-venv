@@ -7,16 +7,16 @@
 #   for other means of cd, such as z.
 # * Update syntax to work with new versions of fish.
 
-function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
-  status --is-command-substitution; and return
 
-  # Check if we are inside a git repository
+function __get_venv_search_dir
   if git rev-parse --show-toplevel &>/dev/null
-    set dir (realpath (git rev-parse --show-toplevel))
+    realpath (git rev-parse --show-toplevel)
   else
-    set dir (pwd)
+    pwd
   end
+end
 
+function __handle_venv_activation --argument dir 
   # Find a virtual environment in the directory
   set VENV_DIR_NAMES env .env venv .venv
   for venv_dir in $dir/$VENV_DIR_NAMES
@@ -32,6 +32,11 @@ function __auto_source_venv --on-variable PWD --description "Activate/Deactivate
   else if not test -z "$VIRTUAL_ENV" -o -e "$venv_dir"
     deactivate
   end
+end
+
+function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
+  status --is-command-substitution; and return
+  __handle_venv_activation (__get_venv_search_dir)
 end
 
 __auto_source_venv
