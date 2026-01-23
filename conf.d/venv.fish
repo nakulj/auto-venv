@@ -8,12 +8,8 @@
 # * Update syntax to work with new versions of fish.
 
 
-function __get_venv_search_dir
-  if git rev-parse --show-toplevel &>/dev/null
-    realpath (git rev-parse --show-toplevel)
-  else
-    pwd
-  end
+function __venv_base
+  git rev-parse --show-toplevel 2>/dev/null; or pwd
 end
 
 function __handle_venv_activation --argument dir 
@@ -36,7 +32,7 @@ end
 
 function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
   status --is-command-substitution; and return
-  __handle_venv_activation (__get_venv_search_dir)
+  __handle_venv_activation (__venv_base)
 end
 
 __auto_source_venv
