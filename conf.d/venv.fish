@@ -7,31 +7,38 @@
 #   for other means of cd, such as z.
 # * Update syntax to work with new versions of fish.
 
-function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
-  status --is-command-substitution; and return
+# where to look for virtual environments
+function __venv_base
+  git rev-parse --show-toplevel 2>/dev/null; or pwd
+end
 
-  # Check if we are inside a git repository
-  if git rev-parse --show-toplevel &>/dev/null
-    set dir (realpath (git rev-parse --show-toplevel))
-  else
-    set dir (pwd)
-  end
-
-  # Find a virtual environment in the directory
+# find the virtualenv, whatever it is called
+function __venv --argument-names dir
   set VENV_DIR_NAMES env .env venv .venv
   for venv_dir in $dir/$VENV_DIR_NAMES
     if test -e "$venv_dir/bin/activate.fish"
-      break
+      echo "$venv_dir"
+      return
     end
   end
+  return 1
+end
 
-  # Activate venv if it was found and not activated before
-  if test "$VIRTUAL_ENV" != "$venv_dir" -a -e "$venv_dir/bin/activate.fish"
-    source $venv_dir/bin/activate.fish
-  # Deactivate venv if it is activated but the directory doesn't exist
-  else if not test -z "$VIRTUAL_ENV" -o -e "$venv_dir"
-    deactivate
+function __handle_venv_activation --argument-names dir
+  set -l venv_dir (__venv $dir); or begin
+    # no virtual env found, deactivate any existing virtual env 
+    set -q VIRTUAL_ENV; and deactivate
+    return
   end
+
+  if test "$VIRTUAL_ENV" != "$venv_dir"
+    source "$venv_dir/bin/activate.fish"
+  end
+end
+
+function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
+  status --is-command-substitution; and return
+  __handle_venv_activation (__venv_base)
 end
 
 __auto_source_venv
