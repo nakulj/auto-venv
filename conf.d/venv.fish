@@ -26,18 +26,13 @@ end
 
 function __handle_venv_activation --argument-names dir
     
-    #echo "looking in venv dir:" (__venv $dir)
     set -l venv_dir (__venv $dir); or begin
-      #echo "no virtual env found"
       # no virtual env found, deactivate any existing virtual env 
       set -q VIRTUAL_ENV; and deactivate
       return
     end
-    #echo "found a virtual env: $venv_dir"
-    #echo "current virtual env: $VIRTUAL_ENV"
 
     if test "$VIRTUAL_ENV" != "$venv_dir"
-      #echo "not equal"
       source "$venv_dir/bin/activate.fish"
     end
 end
