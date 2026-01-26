@@ -8,8 +8,12 @@ on:
 
 jobs:
   test:
-    name: Run Fishtape Tests
-    runs-on: ubuntu-latest
+    name: Run Fishtape Tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: fish-shop/install-fish-shell@v2
