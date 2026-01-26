@@ -70,6 +70,7 @@ end
   mkdir -p $tmp/venv_dir/venv/bin
   touch $tmp/venv_dir/venv/bin/activate.fish
   __handle_venv_activation $tmp/venv_dir
+  __handle_venv_activation $tmp/venv_dir
   rm -rf $tmp/venv_dir
   set -e VIRTUAL_ENV
 ) = "sourced $tmp/venv_dir/venv/bin/activate.fish"
