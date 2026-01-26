@@ -61,6 +61,21 @@ end
   rm -rf $tmp/venv_dir
 ) -ef "$tmp/venv_dir/.env"
 
+@test "fail if no virtual env found" (
+  mkdir $tmp/no_venv_dir
+  __venv $tmp/no_venv_dir >/dev/null
+  echo $status
+  rm -rf $tmp/no_venv_dir
+) = '1'
+
+@test "pass if a virtual env found" (
+  mkdir -p $tmp/venv_dir/venv/bin
+  touch $tmp/venv_dir/venv/bin/activate.fish
+  __venv $tmp/venv_dir >/dev/null
+  echo $status
+  rm -rf $tmp/venv_dir
+) = '0'
+
 # __handle_venv_activation tests
 
 
