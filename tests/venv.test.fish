@@ -111,5 +111,3 @@ sourced $tmp/b/venv/bin/activate.fish"
   set -e VIRTUAL_ENV
 ) = "sourced $tmp/venv_dir/venv/bin/activate.fish
 deactivated"
-
-@test "a failing test" (echo 'foo') = 'bar'
