@@ -1,6 +1,4 @@
-source (dirname (status -f))/../conf.d/venv_helpers.fish
-
-# TODO: figure out if these tests can be less stateful
+source (dirname (status -f))/../conf.d/venv.fish
 
 set tmp (mktemp -d)
 
@@ -16,24 +14,32 @@ set tmp (mktemp -d)
   git init $tmp/git_repo > /dev/null
   cd git_repo
   __venv_base
+  rm -rf $tmp/git_repo
 ) -ef "$tmp/git_repo"
 
 
 @test "returns git root inside git repo" (
+  git init $tmp/git_repo > /dev/null
   mkdir $tmp/git_repo/dir_in_repo
   cd $tmp/git_repo/dir_in_repo
   __venv_base
+  rm -rf $tmp/git_repo
 ) -ef "$tmp/git_repo"
 
 # __venv tests
 
-@test "no output if no virtual env found" (__venv $tmp) -z
+@test "no output if no virtual env found" (
+  mkdir $tmp/no_venv_dir
+  __venv $tmp/no_venv_dir
+  rm -rf $tmp/no_venv_dir
+) -z
 
 @test "returns venv directory" (
-  mkdir -p $tmp/venv/bin
-  touch $tmp/venv/bin/activate.fish
-  __venv $tmp
-) -ef "$tmp/venv"
+  mkdir -p $tmp/venv_dir/venv/bin
+  touch $tmp/venv_dir/venv/bin/activate.fish
+  __venv $tmp/venv_dir
+  rm -rf $tmp/venv_dir
+) -ef "$tmp/venv_dir/venv"
 
 # __handle_venv_activation tests
 
@@ -52,17 +58,47 @@ end
 
 
 @test "new environment is activated" (
-  mkdir -p $tmp/venv/bin
-  __handle_venv_activation $tmp
-) = "sourced $tmp/venv/bin/activate.fish"
+  mkdir -p $tmp/venv_dir/venv/bin
+  touch $tmp/venv_dir/venv/bin/activate.fish
+  __handle_venv_activation $tmp/venv_dir
+  rm -rf $tmp/venv_dir
+  set -e VIRTUAL_ENV
+) = "sourced $tmp/venv_dir/venv/bin/activate.fish"
 
 
 @test "same environment is not re-activated" (
-  __handle_venv_activation $tmp
-) -z
+  mkdir -p $tmp/venv_dir/venv/bin
+  touch $tmp/venv_dir/venv/bin/activate.fish
+  __handle_venv_activation $tmp/venv_dir
+  rm -rf $tmp/venv_dir
+  set -e VIRTUAL_ENV
+) = "sourced $tmp/venv_dir/venv/bin/activate.fish"
 
-#@test "environment is changed correctly" (
-  #mkdir -p $tmp/a/venv/bin
-  #__handle_venv_activation $tmp/a
-  #__handle_venv_activation $tmp/b
-#) = "sourced $tmp/venv/bin/activate.fish"
+@test "environment is changed correctly" (
+  mkdir -p $tmp/a/venv/bin
+  touch $tmp/a/venv/bin/activate.fish
+  mkdir -p $tmp/b/venv/bin
+  touch $tmp/b/venv/bin/activate.fish
+  begin
+    __handle_venv_activation $tmp/a
+    __handle_venv_activation $tmp/b
+  end | string collect
+  rm -rf $tmp/a
+  rm -rf $tmp/b
+  set -e VIRTUAL_ENV
+)  = "sourced $tmp/a/venv/bin/activate.fish
+sourced $tmp/b/venv/bin/activate.fish"
+
+@test "environment is deactivated" (
+  mkdir -p $tmp/venv_dir/venv/bin
+  touch $tmp/venv_dir/venv/bin/activate.fish
+  mkdir $tmp/no_venv_dir
+  begin
+    __handle_venv_activation $tmp/venv_dir
+    __handle_venv_activation $tmp/no_venv_dir
+  end | string collect
+  rm -rf $tmp/venv_dir
+  rm -rf $tmp/no_venv_dir
+  set -e VIRTUAL_ENV
+) = "sourced $tmp/venv_dir/venv/bin/activate.fish
+deactivated"
