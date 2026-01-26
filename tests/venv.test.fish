@@ -2,6 +2,19 @@ source (dirname (status -f))/../conf.d/venv.fish
 
 set tmp (mktemp -d)
 
+function deactivate
+  echo "deactivated"
+end
+
+function source
+  if string match -q '*activate.fish' $argv[1]
+    set -gx VIRTUAL_ENV (string replace -r '/bin/activate\.fish$' '' $argv)
+    echo "sourced $argv"
+    return
+  end
+  builtin source $argv
+end
+
 # __venv_base tests
 
 @test "returns PWD outside git repo" (
@@ -41,20 +54,15 @@ set tmp (mktemp -d)
   rm -rf $tmp/venv_dir
 ) -ef "$tmp/venv_dir/venv"
 
+@test "returns .env directory" (
+  mkdir -p $tmp/venv_dir/.env/bin
+  touch $tmp/venv_dir/.env/bin/activate.fish
+  __venv $tmp/venv_dir
+  rm -rf $tmp/venv_dir
+) -ef "$tmp/venv_dir/.env"
+
 # __handle_venv_activation tests
 
-function deactivate
-  echo "deactivated"
-end
-
-function source
-  if string match -q '*activate.fish' $argv[1]
-    set -gx VIRTUAL_ENV (string replace -r '/bin/activate\.fish$' '' $argv)
-    echo "sourced $argv"
-    return
-  end
-  builtin source $argv
-end
 
 
 @test "new environment is activated" (
