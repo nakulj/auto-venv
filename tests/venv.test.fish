@@ -43,6 +43,7 @@ end
 
 function source
   if string match -q '*activate.fish' $argv[1]
+    set -gx VIRTUAL_ENV (string replace -r '/bin/activate\.fish$' '' $argv)
     echo "sourced $argv"
     return
   end
@@ -54,3 +55,14 @@ end
   mkdir -p $tmp/venv/bin
   __handle_venv_activation $tmp
 ) = "sourced $tmp/venv/bin/activate.fish"
+
+
+@test "same environment is not re-activated" (
+  __handle_venv_activation $tmp
+) -z
+
+#@test "environment is changed correctly" (
+  #mkdir -p $tmp/a/venv/bin
+  #__handle_venv_activation $tmp/a
+  #__handle_venv_activation $tmp/b
+#) = "sourced $tmp/venv/bin/activate.fish"
