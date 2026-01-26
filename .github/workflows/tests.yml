@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: fish-shop/install-fish-shell@v1
+      - uses: fish-shop/install-fish-shell@v2
       - uses: fish-shop/run-fishtape-tests@v2
         with:
-          globs: 'tests/*.test.fish'
+          patterns: 'tests/*.test.fish'
