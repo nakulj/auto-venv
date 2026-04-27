@@ -3,16 +3,16 @@ source (dirname (status -f))/../conf.d/venv.fish
 set tmp (mktemp -d)
 
 function deactivate
-  echo "deactivated"
+    echo deactivated
 end
 
 function source
-  if string match -q '*activate.fish' $argv[1]
-    set -gx VIRTUAL_ENV (string replace -r '/bin/activate\.fish$' '' $argv)
-    echo "sourced $argv"
-    return
-  end
-  builtin source $argv
+    if string match -q '*activate.fish' $argv[1]
+        set -gx VIRTUAL_ENV (string replace -r '/bin/activate\.fish$' '' $argv)
+        echo "sourced $argv"
+        return
+    end
+    builtin source $argv
 end
 
 # __venv_base tests
@@ -22,14 +22,12 @@ end
   __venv_base
 ) -ef $tmp
 
-
 @test "returns git root at git root" (
   git init $tmp/git_repo > /dev/null
   cd git_repo
   __venv_base
   rm -rf $tmp/git_repo
 ) -ef "$tmp/git_repo"
-
 
 @test "returns git root inside git repo" (
   git init $tmp/git_repo > /dev/null
@@ -66,7 +64,7 @@ end
   __venv $tmp/no_venv_dir >/dev/null
   echo $status
   rm -rf $tmp/no_venv_dir
-) = '1'
+) = 1
 
 @test "pass if a virtual env found" (
   mkdir -p $tmp/venv_dir/venv/bin
@@ -74,11 +72,9 @@ end
   __venv $tmp/venv_dir >/dev/null
   echo $status
   rm -rf $tmp/venv_dir
-) = '0'
+) = 0
 
 # __handle_venv_activation tests
-
-
 
 @test "new environment is activated" (
   mkdir -p $tmp/venv_dir/venv/bin
@@ -87,7 +83,6 @@ end
   rm -rf $tmp/venv_dir
   set -e VIRTUAL_ENV
 ) = "sourced $tmp/venv_dir/venv/bin/activate.fish"
-
 
 @test "same environment is not re-activated" (
   mkdir -p $tmp/venv_dir/venv/bin
@@ -110,7 +105,7 @@ end
   rm -rf $tmp/a
   rm -rf $tmp/b
   set -e VIRTUAL_ENV
-)  = "sourced $tmp/a/venv/bin/activate.fish
+) = "sourced $tmp/a/venv/bin/activate.fish
 sourced $tmp/b/venv/bin/activate.fish"
 
 @test "environment is deactivated" (
