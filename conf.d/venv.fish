@@ -24,13 +24,13 @@ function __venv --argument-names dir
 end
 
 function __handle_venv_activation --argument-names dir
-    set -l venv_dir (__venv $dir); or begin
-        # no virtual env found, deactivate any existing virtual env 
+  set -l venv_dir (__venv $dir); or begin
+    # no virtual env found, deactivate any existing virtual env 
         if set -q VIRTUAL_ENV; and functions -q deactivate
             deactivate
         end
-        return
-    end
+    return
+  end
 
     if test "$VIRTUAL_ENV" != "$venv_dir"
         source "$venv_dir/bin/activate.fish"

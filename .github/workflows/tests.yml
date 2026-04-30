@@ -7,6 +7,14 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: fish-shop/install-fish-shell@v2
+      - uses: fish-shop/indent-check@v2.2.102
+      - uses: fish-shop/syntax-check@v2.2.100
+
   test:
     name: Run Fishtape Tests on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
