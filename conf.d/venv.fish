@@ -1,6 +1,5 @@
 # Based on https://gist.github.com/tommyip/cf9099fa6053e30247e5d0318de2fb9e
 
-
 # Based on https://gist.github.com/bastibe/c0950e463ffdfdfada7adf149ae77c6f
 # Changes:
 # * Instead of overriding cd, we detect directory change. This allows the script to work
@@ -9,38 +8,38 @@
 
 # where to look for virtual environments
 function __venv_base
-  git rev-parse --show-toplevel 2>/dev/null; or pwd
+    git rev-parse --show-toplevel 2>/dev/null; or pwd
 end
 
 # find the virtualenv, whatever it is called
 function __venv --argument-names dir
-  set VENV_DIR_NAMES env .env venv .venv
-  for venv_dir in $dir/$VENV_DIR_NAMES
-    if test -e "$venv_dir/bin/activate.fish"
-      echo "$venv_dir"
-      return
+    set VENV_DIR_NAMES env .env venv .venv
+    for venv_dir in $dir/$VENV_DIR_NAMES
+        if test -e "$venv_dir/bin/activate.fish"
+            echo "$venv_dir"
+            return
+        end
     end
-  end
-  return 1
+    return 1
 end
 
 function __handle_venv_activation --argument-names dir
-  set -l venv_dir (__venv $dir); or begin
-    # no virtual env found, deactivate any existing virtual env 
-    if set -q VIRTUAL_ENV; and functions -q deactivate
-    deactivate
-  end
-    return
-  end
+    set -l venv_dir (__venv $dir); or begin
+        # no virtual env found, deactivate any existing virtual env 
+        if set -q VIRTUAL_ENV; and functions -q deactivate
+            deactivate
+        end
+        return
+    end
 
-  if test "$VIRTUAL_ENV" != "$venv_dir"
-    source "$venv_dir/bin/activate.fish"
-  end
+    if test "$VIRTUAL_ENV" != "$venv_dir"
+        source "$venv_dir/bin/activate.fish"
+    end
 end
 
 function __auto_source_venv --on-variable PWD --description "Activate/Deactivate virtualenv on directory change"
-  status --is-command-substitution; and return
-  __handle_venv_activation (__venv_base)
+    status --is-command-substitution; and return
+    __handle_venv_activation (__venv_base)
 end
 
 __auto_source_venv
