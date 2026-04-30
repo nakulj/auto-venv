@@ -26,7 +26,9 @@ end
 function __handle_venv_activation --argument-names dir
     set -l venv_dir (__venv $dir); or begin
         # no virtual env found, deactivate any existing virtual env 
-        set -q VIRTUAL_ENV; and deactivate
+        if set -q VIRTUAL_ENV; and functions -q deactivate
+            deactivate
+        end
         return
     end
 
